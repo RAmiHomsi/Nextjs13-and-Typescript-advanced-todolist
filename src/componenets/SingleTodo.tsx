@@ -1,34 +1,27 @@
 import React, { useState } from "react";
-import { SingleTodoProps } from "../types";
+import { SingleTodoProps } from "../types/index";
 import "./styles.css";
 
-const SingleTodo = ({ todo, todos, setToDos }: SingleTodoProps) => {
+const SingleTodo = ({ todo, dispatch }: SingleTodoProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editTodo, setEditTodo] = useState<string>(todo.todo);
-  const handleDone = (id: number) => {
-    // Find the index of the todo item with the specified ID
-    const todoIndex = todos.findIndex((t) => t.id === id);
 
-    if (todoIndex !== -1) {
-      // Create a copy array of todos
-      const updatedTodos = [...todos];
-
-      //find the targeted element and change its property isDone
-      updatedTodos[todoIndex].isDone = !updatedTodos[todoIndex].isDone;
-
-      // Update the state with the modified todo list
-      setToDos(updatedTodos);
-    }
+  const handleDone = () => {
+    dispatch({ type: "DONE", payload: todo.id });
   };
 
-  const handleDelete = (id: number) => {
-    setToDos(todos.filter((todo) => todo.id !== id));
+  const handleDelete = () => {
+    dispatch({ type: "DELETE", payload: todo.id });
   };
 
-  const handleEdit = () => {};
+  const handleEdit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch({ type: "EDIT", payload: { id: todo.id, text: editTodo } });
+    setIsEdit(false);
+  };
 
   return (
-    <form className="todos__single" onSubmit={(e) => handleEdit(e, todo.id)}>
+    <form className="todos__single" onSubmit={(e) => handleEdit(e)}>
       {isEdit ? (
         <input
           type="text"
@@ -71,7 +64,7 @@ const SingleTodo = ({ todo, todos, setToDos }: SingleTodoProps) => {
             strokeWidth={1.5}
             stroke="currentColor"
             className="icon"
-            onClick={() => handleDelete(todo.id)}
+            onClick={handleDelete}
           >
             <path
               strokeLinecap="round"
@@ -87,7 +80,7 @@ const SingleTodo = ({ todo, todos, setToDos }: SingleTodoProps) => {
               viewBox="0 0 24 24"
               fill="currentColor"
               className="icon"
-              onClick={() => handleDone(todo.id)}
+              onClick={handleDone}
             >
               <path
                 fillRule="evenodd"
@@ -103,7 +96,7 @@ const SingleTodo = ({ todo, todos, setToDos }: SingleTodoProps) => {
               strokeWidth={1.5}
               stroke="currentColor"
               className="icon"
-              onClick={() => handleDone(todo.id)}
+              onClick={handleDone}
             >
               <path
                 strokeLinecap="round"

@@ -1,17 +1,21 @@
-import React, { useRef } from "react";
+import React, { useState, useRef } from "react";
 import "./styles.css";
-import { InputFieldPros } from "../types";
+import { InputFieldProps } from "../types/index";
 
-const InputField = ({ todo, setTodo, handleAdd }: InputFieldPros) => {
+const InputField = ({ handleAdd }: InputFieldProps) => {
+  const [todo, setTodo] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (todo) {
+      handleAdd({ id: Date.now(), todo, isDone: false });
+      setTodo("");
+      inputRef.current?.blur();
+    }
+  };
   return (
-    <form
-      className="input"
-      onSubmit={(e) => {
-        handleAdd(e);
-        inputRef.current?.blur();
-      }}
-    >
+    <form className="input" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder="Enter a task"

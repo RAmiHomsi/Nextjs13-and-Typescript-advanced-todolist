@@ -1,27 +1,24 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import "./App.css";
 import InputField from "./componenets/InputField";
-import { TodoProps } from "./types";
+import { TodoProps } from "./types/index";
 import TodoList from "./componenets/TodoList";
+import { todoReducer } from "./types/index";
 
 const App: React.FC = () => {
-  const [todo, setTodo] = useState<string>("");
-  const [todos, setToDos] = useState<TodoProps[]>([]);
+  const [state, dispatch] = useReducer(todoReducer, []);
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [todo, setTodo] = useState<string>(""); // Initialize todo and setTodo
 
-    if (todo) {
-      setToDos([...todos, { id: Date.now(), todo: todo, isDone: false }]); //every todo is an object stored in an array
-      setTodo("");
-    }
+  const handleAdd = (todo: TodoProps) => {
+    dispatch({ type: "ADD", payload: todo });
   };
 
   return (
     <div className="App">
       <span className="heading">Taskament</span>
       <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
-      <TodoList todos={todos} setToDos={setToDos} />
+      <TodoList todos={state} dispatch={dispatch} />
     </div>
   );
 };
